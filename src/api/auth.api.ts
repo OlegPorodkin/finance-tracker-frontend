@@ -23,3 +23,8 @@ export async function getMe(): Promise<User> {
   const response = await client.get<User>('/users/me');
   return response.data;
 }
+
+export async function updateMe(data: { name: string; currency: string }): Promise<User> {
+  const response = await client.put<User>('/users/me', data);
+  return response.data;
+}

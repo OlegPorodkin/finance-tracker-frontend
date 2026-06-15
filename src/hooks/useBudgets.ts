@@ -5,10 +5,9 @@ export function useBudgets() {
   const budgetStatus = useBudgetStore((s) => s.budgetStatus);
   const isLoading = useBudgetStore((s) => s.isLoading);
   const fetch = useBudgetStore((s) => s.fetch);
-  const refreshStatus = useBudgetStore((s) => s.refreshStatus);
-  const add = useBudgetStore((s) => s.add);
-  const update = useBudgetStore((s) => s.update);
-  const remove = useBudgetStore((s) => s.remove);
+  const create = useBudgetStore((s) => s.create);
+  const updateById = useBudgetStore((s) => s.updateById);
+  const deleteById = useBudgetStore((s) => s.deleteById);
 
-  return { budgets, budgetStatus, isLoading, fetch, refreshStatus, add, update, remove };
+  return { budgets, budgetStatus, isLoading, fetch, create, updateById, deleteById };
 }

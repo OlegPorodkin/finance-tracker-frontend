@@ -3,11 +3,11 @@ import { useCategoryStore } from '@/store/category.store';
 export function useCategories() {
   const categories = useCategoryStore((s) => s.categories);
   const isLoading = useCategoryStore((s) => s.isLoading);
-  const add = useCategoryStore((s) => s.add);
-  const update = useCategoryStore((s) => s.update);
-  const remove = useCategoryStore((s) => s.remove);
+  const create = useCategoryStore((s) => s.create);
+  const updateById = useCategoryStore((s) => s.updateById);
+  const deleteById = useCategoryStore((s) => s.deleteById);
 
   const active = categories.filter((c) => !c.isDeleted);
 
-  return { categories, active, isLoading, add, update, remove };
+  return { categories, active, isLoading, create, updateById, deleteById };
 }

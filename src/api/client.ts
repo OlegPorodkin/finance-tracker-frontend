@@ -41,8 +41,11 @@ client.interceptors.response.use(
         return client(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        useAuthStore.getState().logout();
-        window.location.replace('/login');
+        const publicPaths = ['/login', '/register'];
+        if (!publicPaths.includes(window.location.pathname)) {
+          useAuthStore.getState().logout();
+          window.location.replace('/login');
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
