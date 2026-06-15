@@ -2,6 +2,7 @@ import axios from 'axios';
 import type { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import { toast } from 'sonner';
 import type { ApiError } from '@/types';
+import { useAuthStore } from '@/store/auth.store';
 
 const client: AxiosInstance = axios.create({
   baseURL: '/api/v1',
@@ -26,8 +27,8 @@ client.interceptors.response.use(
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          pendingQueue.push({ resolve, reject });
+        return new Promise<void>((resolve, reject) => {
+          pendingQueue.push({ resolve: () => resolve(), reject });
         }).then(() => client(originalRequest));
       }
 
@@ -40,7 +41,8 @@ client.interceptors.response.use(
         return client(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError);
-        // TODO: call auth.store.logout() + redirect to /login
+        useAuthStore.getState().logout();
+        window.location.replace('/login');
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
