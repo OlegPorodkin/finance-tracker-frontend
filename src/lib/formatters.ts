@@ -1,4 +1,5 @@
-export function formatCurrency(amountInCents: number, currency: string): string {
+export function formatCurrency(amountInCents: number | undefined | null, currency: string): string {
+  if (amountInCents == null || isNaN(amountInCents)) return '—';
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency,
@@ -7,7 +8,8 @@ export function formatCurrency(amountInCents: number, currency: string): string 
 }
 
 export function formatDate(isoDate: string): string {
-  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(isoDate));
+  const [year, month, day] = isoDate.split('-').map(Number);
+  return new Intl.DateTimeFormat('en-US', { dateStyle: 'medium' }).format(new Date(year, month - 1, day));
 }
 
 export function formatPercent(value: number): string {
