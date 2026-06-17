@@ -33,7 +33,10 @@ export function SettingsPage() {
     formState: { errors, isSubmitting, isDirty },
   } = useForm<FormValues>({
     resolver: zodResolver(settingsSchema),
-    defaultValues: { name: '', currency: 'USD' },
+    defaultValues: {
+      name: user?.name ?? '',
+      currency: user?.currency ?? 'USD',
+    },
   });
 
   useEffect(() => {
