@@ -15,6 +15,7 @@ import {
 export function TopBar() {
   const navigate = useNavigate();
   const toggleSidebar = useUiStore((s) => s.toggleSidebar);
+  const toggleMobileSidebar = useUiStore((s) => s.toggleMobileSidebar);
   const activeDateRange = useUiStore((s) => s.activeDateRange);
   const user = useAuthStore((s) => s.user);
   const logoutStore = useAuthStore((s) => s.logout);
@@ -36,7 +37,10 @@ export function TopBar() {
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-card px-4">
-      <button onClick={toggleSidebar} className="rounded p-1 hover:bg-accent">
+      <button
+        onClick={() => window.innerWidth < 768 ? toggleMobileSidebar() : toggleSidebar()}
+        className="rounded p-1 hover:bg-accent"
+      >
         <Menu size={20} />
       </button>
       <div className="flex-1" />
