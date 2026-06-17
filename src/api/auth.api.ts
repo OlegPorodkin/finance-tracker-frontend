@@ -1,14 +1,14 @@
 import client from './client';
-import type { User, LoginRequest, RegisterRequest } from '@/types';
+import type { User, AuthResponse, LoginRequest, RegisterRequest } from '@/types';
 
 export async function login(data: LoginRequest): Promise<User> {
-  const response = await client.post<User>('/auth/login', data);
-  return response.data;
+  const response = await client.post<AuthResponse>('/auth/login', data);
+  return response.data.user;
 }
 
 export async function register(data: RegisterRequest): Promise<User> {
-  const response = await client.post<User>('/auth/register', data);
-  return response.data;
+  const response = await client.post<AuthResponse>('/auth/register', data);
+  return response.data.user;
 }
 
 export async function logout(): Promise<void> {
