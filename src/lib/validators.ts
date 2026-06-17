@@ -7,7 +7,12 @@ export const loginSchema = z.object({
 
 export const registerSchema = z.object({
   email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  password: z.string()
+    .min(8, 'At least 8 characters')
+    .regex(/\p{Lu}/u, 'Must contain an uppercase letter')
+    .regex(/\p{Ll}/u, 'Must contain a lowercase letter')
+    .regex(/[0-9]/, 'Must contain a digit')
+    .regex(/[^\p{L}\p{N}]/u, 'Must contain a special character'),
   name: z.string().min(1, 'Name is required'),
   currency: z.string().min(1, 'Currency is required'),
 });
