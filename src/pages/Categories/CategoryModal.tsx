@@ -65,7 +65,7 @@ export function CategoryModal({ open, category, onClose, onSubmit }: CategoryMod
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{category ? 'Edit category' : 'Add category'}</DialogTitle>
         </DialogHeader>
