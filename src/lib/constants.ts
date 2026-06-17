@@ -22,11 +22,31 @@ export const TRANSACTION_TYPES = ['INCOME', 'EXPENSE'] as const;
 export const BUDGET_PERIODS = ['WEEKLY', 'MONTHLY', 'YEARLY'] as const;
 
 export const CATEGORY_ICONS = [
-  'ShoppingCart', 'ShoppingBag', 'Utensils', 'Coffee', 'Car', 'Home',
-  'Heart', 'Briefcase', 'Wallet', 'CreditCard', 'DollarSign', 'TrendingUp',
-  'PiggyBank', 'Zap', 'Wifi', 'Phone', 'Music', 'Film', 'Gift', 'Plane',
-  'Train', 'Bus', 'Baby', 'Dumbbell', 'BookOpen', 'Gamepad2', 'Monitor',
-  'Shirt', 'Wrench', 'ArrowDownLeft', 'ArrowUpRight', 'Landmark',
+  // Еда
+  'Utensils', 'Coffee', 'Pizza', 'Apple', 'Beer', 'Cookie', 'ChefHat',
+  // Транспорт
+  'Car', 'Train', 'Bus', 'Plane', 'Bike', 'Fuel', 'Anchor',
+  // Покупки
+  'ShoppingCart', 'ShoppingBag', 'Shirt', 'Package', 'Tag',
+  // Жильё
+  'Home', 'Lightbulb', 'Hammer', 'Key', 'Wrench',
+  // Развлечения
+  'Film', 'Music', 'Gamepad2', 'Tv', 'Headphones', 'Clapperboard', 'PartyPopper',
+  // Здоровье
+  'Heart', 'Dumbbell', 'Baby', 'Pill', 'Stethoscope', 'Salad',
+  // Финансы
+  'Wallet', 'CreditCard', 'DollarSign', 'TrendingUp', 'TrendingDown',
+  'PiggyBank', 'Landmark', 'Banknote', 'Receipt', 'Award',
+  // Работа
+  'Briefcase', 'BarChart2', 'FileText', 'Laptop', 'Monitor', 'Sofa',
+  // Образование
+  'BookOpen', 'GraduationCap', 'Pencil',
+  // Путешествия
+  'Globe', 'Map', 'Hotel', 'Umbrella',
+  // Технологии
+  'Zap', 'Wifi', 'Phone',
+  // Другое
+  'PawPrint', 'Leaf', 'Sun', 'Star', 'Gift', 'ArrowDownLeft', 'ArrowUpRight',
 ] as const;
 
 export const CATEGORY_COLORS = [
