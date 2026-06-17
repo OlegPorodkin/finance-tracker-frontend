@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -7,10 +7,12 @@ import { register as registerUser } from '@/api/auth.api';
 import { useAuthStore } from '@/store/auth.store';
 import { registerSchema } from '@/lib/validators';
 import { isApiError } from '@/types';
+import { CURRENCY_OPTIONS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type RegisterForm = z.infer<typeof registerSchema>;
 
@@ -21,10 +23,11 @@ export function RegisterPage() {
 
   const {
     register,
+    control,
     handleSubmit,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterForm>({ resolver: zodResolver(registerSchema) });
+  } = useForm<RegisterForm>({ resolver: zodResolver(registerSchema), defaultValues: { currency: 'USD' } });
 
   useEffect(() => {
     if (isAuthenticated) navigate('/', { replace: true });
@@ -88,6 +91,30 @@ export function RegisterPage() {
               />
               {errors.password && (
                 <p className="text-sm text-destructive">{errors.password.message}</p>
+              )}
+            </div>
+            <div className="space-y-1.5">
+              <Label>Currency</Label>
+              <Controller
+                control={control}
+                name="currency"
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CURRENCY_OPTIONS.map((c) => (
+                        <SelectItem key={c.code} value={c.code}>
+                          {c.code} — {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.currency && (
+                <p className="text-sm text-destructive">{errors.currency.message}</p>
               )}
             </div>
             <Button type="submit" className="w-full" disabled={isSubmitting}>
