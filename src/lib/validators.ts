@@ -9,6 +9,7 @@ export const registerSchema = z.object({
   email: z.string().email('Invalid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   name: z.string().min(1, 'Name is required'),
+  currency: z.string().min(1, 'Currency is required'),
 });
 
 export const transactionSchema = z.object({
