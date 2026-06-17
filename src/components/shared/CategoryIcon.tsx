@@ -8,9 +8,9 @@ interface CategoryIconProps {
 }
 
 export function CategoryIcon({ iconName, color, size = 16 }: CategoryIconProps) {
-  const Icon = (LucideIcons as Record<string, unknown>)[iconName];
-  if (typeof Icon !== 'function') {
+  const Icon = (LucideIcons as Record<string, unknown>)[iconName] as React.ElementType | undefined;
+  if (!Icon) {
     return <span className="inline-block rounded-full" style={{ width: size, height: size, backgroundColor: color }} />;
   }
-  return createElement(Icon as React.ElementType, { size, color });
+  return createElement(Icon, { size, color });
 }
