@@ -126,7 +126,7 @@ export function TransactionModal({ open, transaction, onClose, onSubmit }: Trans
               control={control}
               name="type"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange} modal={false}>
+                <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -145,7 +145,7 @@ export function TransactionModal({ open, transaction, onClose, onSubmit }: Trans
               control={control}
               name="categoryId"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange} modal={false}>
+                <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>

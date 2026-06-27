@@ -162,7 +162,7 @@ export function BudgetModal({ open, budget, onClose, onSubmit }: BudgetModalProp
                 control={control}
                 name="period"
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange} modal={false}>
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
