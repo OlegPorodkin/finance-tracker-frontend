@@ -114,7 +114,7 @@ export function BudgetModal({ open, budget, onClose, onSubmit }: BudgetModalProp
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{budget ? 'Edit budget' : 'Add budget'}</DialogTitle>
         </DialogHeader>

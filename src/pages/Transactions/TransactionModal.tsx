@@ -115,7 +115,7 @@ export function TransactionModal({ open, transaction, onClose, onSubmit }: Trans
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{transaction ? 'Edit transaction' : 'Add transaction'}</DialogTitle>
         </DialogHeader>

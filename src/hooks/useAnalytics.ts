@@ -6,7 +6,8 @@ import { useUiStore } from '@/store/ui.store';
 export function useAnalytics() {
   const summary = useAnalyticsStore((s) => s.summary);
   const byCategory = useAnalyticsStore((s) => s.byCategory);
-  const monthlyTrend = useAnalyticsStore((s) => s.monthlyTrend);
+  const dailyTrend = useAnalyticsStore((s) => s.dailyTrend);
+  const openingBalance = useAnalyticsStore((s) => s.openingBalance);
   const isLoading = useAnalyticsStore((s) => s.isLoading);
   const fetchIfStale = useAnalyticsStore((s) => s.fetchIfStale);
   const activeDateRange = useUiStore((s) => s.activeDateRange);
@@ -22,10 +23,11 @@ export function useAnalytics() {
     return {
       ...item,
       type: (cat?.type ?? item.type) as 'INCOME' | 'EXPENSE',
+      categoryName: cat?.name ?? item.categoryName,
       categoryColor: cat?.color ?? item.categoryColor,
       categoryIcon: cat?.icon ?? item.categoryIcon,
     };
   });
 
-  return { summary, byCategory: enrichedByCategory, monthlyTrend, isLoading };
+  return { summary, byCategory: enrichedByCategory, dailyTrend, openingBalance, isLoading };
 }

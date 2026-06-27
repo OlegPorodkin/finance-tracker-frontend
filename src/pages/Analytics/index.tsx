@@ -1,18 +1,69 @@
 import { useState } from 'react';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend,
+  Tooltip, ResponsiveContainer,
 } from 'recharts';
-import { format, startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear } from 'date-fns';
+import { format, startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear, parseISO } from 'date-fns';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useDateRange } from '@/hooks/useDateRange';
 import { useAuthStore } from '@/store/auth.store';
-import { getTrendChartData } from '@/lib/analytics';
+import { getBalanceChartData } from '@/lib/analytics';
 import { formatCurrency, formatPercent } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { CategoryIcon } from '@/components/shared/CategoryIcon';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+
+interface BalancePoint {
+  date: string;
+  balance: number;
+  openingBalance: number;
+  income: number;
+  expense: number;
+  hasTransactions: boolean;
+}
+
+function BalanceTooltip({
+  active, payload, label, currency,
+}: {
+  active?: boolean;
+  payload?: Array<{ payload: BalancePoint }>;
+  label?: string;
+  currency: string;
+}) {
+  if (!active || !payload?.length || !label) return null;
+  const d = payload[0].payload;
+  return (
+    <div className="rounded-lg border bg-background p-3 shadow-sm text-sm min-w-[190px] space-y-1">
+      <p className="font-medium">{format(parseISO(label), 'MMM d, yyyy')}</p>
+      {d.hasTransactions && (
+        <>
+          <div className="flex justify-between gap-6 text-muted-foreground">
+            <span>Opening</span>
+            <span>{formatCurrency(Math.round(d.openingBalance * 100), currency)}</span>
+          </div>
+          {d.income > 0 && (
+            <div className="flex justify-between gap-6 text-green-600">
+              <span>Income</span>
+              <span>+{formatCurrency(Math.round(d.income * 100), currency)}</span>
+            </div>
+          )}
+          {d.expense > 0 && (
+            <div className="flex justify-between gap-6 text-red-500">
+              <span>Expenses</span>
+              <span>−{formatCurrency(Math.round(d.expense * 100), currency)}</span>
+            </div>
+          )}
+          <div className="border-t" />
+        </>
+      )}
+      <div className="flex justify-between gap-6 font-semibold">
+        <span>Balance</span>
+        <span>{formatCurrency(Math.round(d.balance * 100), currency)}</span>
+      </div>
+    </div>
+  );
+}
 
 const fmt = (d: Date) => format(d, 'yyyy-MM-dd');
 
@@ -27,15 +78,21 @@ const PRESETS = [
 type BreakdownType = 'EXPENSE' | 'INCOME';
 
 export function AnalyticsPage() {
-  const { summary, byCategory, monthlyTrend, isLoading } = useAnalytics();
+  const { summary, byCategory, dailyTrend, openingBalance, isLoading } = useAnalytics();
   const { activeDateRange, setActiveDateRange } = useDateRange();
   const currency = useAuthStore((s) => s.user?.currency ?? 'USD');
   const [breakdownType, setBreakdownType] = useState<BreakdownType>('EXPENSE');
 
-  const trendData = getTrendChartData(monthlyTrend);
-  const breakdownItems = byCategory
+  const balanceData = getBalanceChartData(dailyTrend, openingBalance);
+  const tickInterval = balanceData.length <= 14 ? 0 : Math.ceil(balanceData.length / 8);
+  const filteredByType = byCategory
     .filter((b) => b.type === breakdownType)
     .sort((a, b) => b.totalAmountInCents - a.totalAmountInCents);
+  const typeTotal = filteredByType.reduce((s, i) => s + i.totalAmountInCents, 0);
+  const breakdownItems = filteredByType.map((item) => ({
+    ...item,
+    percentage: typeTotal > 0 ? (item.totalAmountInCents / typeTotal) * 100 : 0,
+  }));
 
   const activePreset = PRESETS.find(
     (p) => p.range().from === activeDateRange.from && p.range().to === activeDateRange.to
@@ -88,65 +145,65 @@ export function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Trend chart */}
+      {/* Balance chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Income vs Expenses by month</CardTitle>
+          <CardTitle className="text-base">Account Balance</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="flex h-56 items-center justify-center text-sm text-muted-foreground">Loading…</div>
-          ) : trendData.length === 0 ? (
+          ) : balanceData.length === 0 ? (
             <div className="flex h-56 items-center justify-center text-sm text-muted-foreground">
               No data for this period
             </div>
           ) : (
             <ResponsiveContainer width="100%" height={240}>
-              <AreaChart data={trendData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <AreaChart data={balanceData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
                 <defs>
-                  <linearGradient id="gradIncome" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
-                  </linearGradient>
-                  <linearGradient id="gradExpense" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ef4444" stopOpacity={0.25} />
-                    <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                  <linearGradient id="gradBalance" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis
-                  dataKey="label"
+                  dataKey="date"
                   tick={{ fontSize: 12 }}
                   tickLine={false}
                   axisLine={false}
+                  interval={tickInterval}
+                  tickFormatter={(d: string) => format(parseISO(d), 'MMM d')}
                 />
                 <YAxis
                   tick={{ fontSize: 12 }}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={(v) => formatCurrency(v * 100, currency).replace(/\.00$/, '')}
-                  width={72}
+                  tickFormatter={(v) => formatCurrency(Math.round(v * 100), currency).replace(/\.00$/, '')}
+                  width={80}
                 />
-                <Tooltip
-                  formatter={(value: number, name: string) => [
-                    formatCurrency(value * 100, currency),
-                    name === 'income' ? 'Income' : 'Expenses',
-                  ]}
-                />
-                <Legend formatter={(v) => (v === 'income' ? 'Income' : 'Expenses')} />
+                <Tooltip content={(props: any) => <BalanceTooltip {...props} currency={currency} />} />
                 <Area
                   type="monotone"
-                  dataKey="income"
-                  stroke="#22c55e"
+                  dataKey="balance"
+                  stroke="#6366f1"
                   strokeWidth={2}
-                  fill="url(#gradIncome)"
-                />
-                <Area
-                  type="monotone"
-                  dataKey="expense"
-                  stroke="#ef4444"
-                  strokeWidth={2}
-                  fill="url(#gradExpense)"
+                  fill="url(#gradBalance)"
+                  dot={(props: any) => {
+                    if (!props.payload.hasTransactions) return <g key={props.key} />;
+                    return (
+                      <circle
+                        key={props.key}
+                        cx={props.cx}
+                        cy={props.cy}
+                        r={4}
+                        fill="#6366f1"
+                        stroke="white"
+                        strokeWidth={1.5}
+                      />
+                    );
+                  }}
+                  activeDot={{ r: 5, fill: '#6366f1' }}
                 />
               </AreaChart>
             </ResponsiveContainer>

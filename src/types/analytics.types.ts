@@ -17,11 +17,11 @@ export interface CategoryBreakdown {
   percentage: number;
 }
 
-export interface MonthlyTrend {
-  year: number;
-  month: number;
+export interface DailyTrend {
+  date: string;
   totalIncomeInCents: number;
   totalExpenseInCents: number;
+  hasTransactions: boolean;
 }
 
 export interface DateRange {
