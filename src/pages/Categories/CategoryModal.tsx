@@ -82,7 +82,7 @@ export function CategoryModal({ open, category, onClose, onSubmit }: CategoryMod
               control={control}
               name="type"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange} disabled={isDefault}>
+                <Select value={field.value} onValueChange={field.onChange} disabled={isDefault} modal={false}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

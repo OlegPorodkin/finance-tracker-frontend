@@ -1,14 +1,16 @@
 import { create } from 'zustand';
-import type { Summary, CategoryBreakdown, MonthlyTrend, DateRange } from '@/types';
+import type { Summary, CategoryBreakdown, DailyTrend, DateRange } from '@/types';
 import type { IAnalyticsRepository } from '@/repositories/IAnalyticsRepository';
 
 interface AnalyticsState {
   summary: Summary | null;
   byCategory: CategoryBreakdown[];
-  monthlyTrend: MonthlyTrend[];
+  dailyTrend: DailyTrend[];
+  openingBalance: number;
   isStale: boolean;
   isLoading: boolean;
   repository: IAnalyticsRepository | null;
+  lastFetchedRange: DateRange | null;
 
   setRepository: (repo: IAnalyticsRepository) => void;
   invalidate: () => void;
@@ -18,26 +20,37 @@ interface AnalyticsState {
 export const useAnalyticsStore = create<AnalyticsState>((set, get) => ({
   summary: null,
   byCategory: [],
-  monthlyTrend: [],
+  dailyTrend: [],
+  openingBalance: 0,
   isStale: true,
   isLoading: false,
   repository: null,
+  lastFetchedRange: null,
 
   setRepository: (repo) => set({ repository: repo }),
 
   invalidate: () => set({ isStale: true }),
 
   fetchIfStale: async (range) => {
-    const { repository, isStale, isLoading } = get();
-    if (!repository || !isStale || isLoading) return;
+    const { repository, isStale, isLoading, lastFetchedRange } = get();
+    if (!repository || isLoading) return;
+
+    const rangeChanged =
+      !lastFetchedRange ||
+      lastFetchedRange.from !== range.from ||
+      lastFetchedRange.to !== range.to;
+
+    if (!isStale && !rangeChanged) return;
+
     set({ isLoading: true });
     try {
-      const [summary, byCategory, monthlyTrend] = await Promise.all([
+      const [summary, byCategory, dailyTrend, openingBalance] = await Promise.all([
         repository.getSummary(range),
         repository.getByCategory(range),
-        repository.getMonthlyTrend(range),
+        repository.getDailyTrend(range),
+        repository.getOpeningBalance(range),
       ]);
-      set({ summary, byCategory, monthlyTrend, isStale: false });
+      set({ summary, byCategory, dailyTrend, openingBalance, isStale: false, lastFetchedRange: range });
     } finally {
       set({ isLoading: false });
     }

@@ -115,7 +115,7 @@ export function TransactionModal({ open, transaction, onClose, onSubmit }: Trans
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{transaction ? 'Edit transaction' : 'Add transaction'}</DialogTitle>
         </DialogHeader>
@@ -126,7 +126,7 @@ export function TransactionModal({ open, transaction, onClose, onSubmit }: Trans
               control={control}
               name="type"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select value={field.value} onValueChange={field.onChange} modal={false}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -145,7 +145,7 @@ export function TransactionModal({ open, transaction, onClose, onSubmit }: Trans
               control={control}
               name="categoryId"
               render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
+                <Select value={field.value} onValueChange={field.onChange} modal={false}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>

@@ -1,7 +1,8 @@
-import type { Summary, CategoryBreakdown, MonthlyTrend, DateRange } from '@/types';
+import type { Summary, CategoryBreakdown, DailyTrend, DateRange } from '@/types';
 
 export interface IAnalyticsRepository {
   getSummary(range: DateRange): Promise<Summary>;
   getByCategory(range: DateRange): Promise<CategoryBreakdown[]>;
-  getMonthlyTrend(range: DateRange): Promise<MonthlyTrend[]>;
+  getDailyTrend(range: DateRange): Promise<DailyTrend[]>;
+  getOpeningBalance(range: DateRange): Promise<number>;
 }

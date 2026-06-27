@@ -114,7 +114,7 @@ export function BudgetModal({ open, budget, onClose, onSubmit }: BudgetModalProp
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{budget ? 'Edit budget' : 'Add budget'}</DialogTitle>
         </DialogHeader>
@@ -162,7 +162,7 @@ export function BudgetModal({ open, budget, onClose, onSubmit }: BudgetModalProp
                 control={control}
                 name="period"
                 render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select value={field.value} onValueChange={field.onChange} modal={false}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
