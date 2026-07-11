@@ -80,11 +80,11 @@ export function BudgetsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {budgets.map((budget) => {
-            const status = budgetStatus.find((s) => s.budgetId === budget.id);
+            const status = budgetStatus.find((s) => s.id === budget.id);
             const category = categories.find((c) => c.id === budget.categoryId);
-            const pct = status ? Math.min(status.percentage, 100) : 0;
-            const isExceeded = status?.isExceeded ?? false;
-            const isAlert = status?.isAlertThresholdReached ?? false;
+            const pct = status ? Math.min(status.spentPercentage, 100) : 0;
+            const isExceeded = status ? status.remainingInCents < 0 : false;
+            const isAlert = (status?.alertTriggered ?? false) && !isExceeded;
 
             return (
               <div
@@ -164,7 +164,7 @@ export function BudgetsPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">
                       {status
-                        ? formatCurrency(status.spentAmountInCents, currency)
+                        ? formatCurrency(status.spentInCents, currency)
                         : '—'}{' '}
                       spent
                     </span>
@@ -178,7 +178,7 @@ export function BudgetsPage() {
                 <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
                   <span className="flex items-center gap-1">
                     <TrendingUp size={11} />
-                    {status ? formatPercent(status.percentage) : '0%'} used
+                    {status ? formatPercent(status.spentPercentage) : '0%'} used
                   </span>
                   <span>Alert at {budget.alertThreshold}%</span>
                 </div>

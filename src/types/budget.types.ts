@@ -12,13 +12,17 @@ export interface Budget {
 }
 
 export interface BudgetStatus {
-  budgetId: string;
+  id: string;
   categoryId: string;
-  spentAmountInCents: number;
+  period: BudgetPeriod;
   limitAmountInCents: number;
-  percentage: number;
-  isExceeded: boolean;
-  isAlertThresholdReached: boolean;
+  spentInCents: number;
+  remainingInCents: number;
+  alertThreshold: number;
+  spentPercentage: number;
+  alertTriggered: boolean;
+  startDate: string;
+  endDate: string;
 }
 
 export interface CreateBudgetRequest {

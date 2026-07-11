@@ -133,11 +133,12 @@ export function DashboardPage() {
               </p>
             ) : (
               topBudgetStatus.map((status) => {
-                const budget = budgets.find((b) => b.id === status.budgetId);
+                const budget = budgets.find((b) => b.id === status.id);
                 const category = categories.find((c) => c.id === status.categoryId);
-                const pct = Math.min(status.percentage, 100);
+                const pct = Math.min(status.spentPercentage, 100);
+                const isExceeded = status.remainingInCents < 0;
                 return (
-                  <div key={status.budgetId} className="space-y-1.5">
+                  <div key={status.id} className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="flex items-center gap-1.5 text-sm font-medium">
                         {category && (
@@ -148,15 +149,15 @@ export function DashboardPage() {
                           />
                         )}
                         {category?.name ?? '—'}
-                        {(status.isExceeded || status.isAlertThresholdReached) && (
+                        {(isExceeded || status.alertTriggered) && (
                           <AlertTriangle
                             size={13}
-                            className={status.isExceeded ? 'text-destructive' : 'text-yellow-500'}
+                            className={isExceeded ? 'text-destructive' : 'text-yellow-500'}
                           />
                         )}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        <CurrencyDisplay amountInCents={status.spentAmountInCents} /> /{' '}
+                        <CurrencyDisplay amountInCents={status.spentInCents} /> /{' '}
                         {budget && formatCurrency(budget.limitAmountInCents, currency)}
                       </span>
                     </div>
@@ -164,9 +165,9 @@ export function DashboardPage() {
                       value={pct}
                       className={cn(
                         'h-2',
-                        status.isExceeded
+                        isExceeded
                           ? '[&>div]:bg-destructive'
-                          : status.isAlertThresholdReached
+                          : status.alertTriggered
                           ? '[&>div]:bg-yellow-500'
                           : ''
                       )}
